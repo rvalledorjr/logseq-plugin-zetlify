@@ -1,5 +1,9 @@
 # Architecture & design decisions
 
+See the [README's "Why" section](../README.md#why) for the product rationale
+(Zettelkasten-style capture, deferred naming, page-level portability) behind
+these decisions.
+
 ## Stack
 
 Vite + TypeScript + pnpm + `vite-plugin-logseq`, no UI framework. Zetlify has
