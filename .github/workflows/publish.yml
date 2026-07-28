@@ -8,7 +8,13 @@ env:
 permissions:
   contents: write
 jobs:
+  # Tier 2 gate: run the real-Logseq matrix on the tagged commit. Because `build`
+  # below `needs: e2e`, a failed/errored Tier 2 means the release job never runs —
+  # the gate FAILS CLOSED by construction (no `if:` that could skip it).
+  e2e:
+    uses: ./.github/workflows/e2e.yml
   build:
+    needs: e2e
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

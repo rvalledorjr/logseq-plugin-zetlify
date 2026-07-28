@@ -1,0 +1,54 @@
+name: E2E (Tier 2)
+# High-fidelity integration gate: drives a REAL, pinned Logseq desktop instance under
+# Xvfb on ubuntu-latest via Playwright's Electron support, running the 8-row §7 matrix
+# against the actual @logseq/libs API and command palette. Covers what the Tier 1 mock
+# cannot (real moveBlock UUID semantics, real slash-command registration, real embed
+# rendering).
+#
+# STATUS: SCAFFOLD. The Playwright suite (e2e/) is stubbed with test.fixme placeholders.
+# Before this workflow can go green, complete the Phase 3 spike in PLAN.md §6:
+#   1. Pin an exact Logseq version below (LOGSEQ_VERSION) — never "latest".
+#   2. Implement the AppImage download step (marked TODO).
+#   3. Make e2e/fixtures/graph load dist/ unpacked + enable the HTTP API server
+#      non-interactively (config/flag driven — CI cannot click Settings).
+# Runnable on demand via workflow_dispatch; consumed by publish.yml via workflow_call.
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+env:
+  # TODO(Phase 3): pin the EXACT Logseq desktop version validated locally. Not "latest".
+  LOGSEQ_VERSION: "REPLACE_ME"
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+      - name: Download pinned Logseq desktop (AppImage)
+        run: |
+          # TODO(Phase 3): download the Logseq ${LOGSEQ_VERSION} .AppImage from the
+          # official GitHub releases, chmod +x, and export its path as LOGSEQ_BIN for
+          # the test step. Example shape (URL/asset name must be verified):
+          #   curl -L -o logseq.AppImage \
+          #     "https://github.com/logseq/logseq/releases/download/${LOGSEQ_VERSION}/Logseq-linux-x64-${LOGSEQ_VERSION}.AppImage"
+          #   chmod +x logseq.AppImage
+          #   echo "LOGSEQ_BIN=$PWD/logseq.AppImage" >> "$GITHUB_ENV"
+          echo "TODO: implement Logseq download for ${LOGSEQ_VERSION}" && exit 1
+
+      - name: Install Playwright system deps
+        run: npx playwright install-deps
+
+      - name: Run Tier 2 under Xvfb
+        run: xvfb-run -a pnpm test:e2e
