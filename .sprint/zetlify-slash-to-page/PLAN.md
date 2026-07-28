@@ -463,19 +463,21 @@ jobs:
 ## 10. Definition of Done checklist
 
 > **Status as of implementation pass (commit `b689a99`, pushed to
-> `origin/main`):** code, scaffold, CI configs, and docs are complete. Items
-> that require a live Logseq desktop instance or a pushed release tag could
-> not be executed in the implementation sandbox. See `BACKLOG.md` in this
-> same directory for the full explanation of each open item and how to close
-> it out. **This sprint is NOT yet done** — the checkboxes below reflect
-> actual verified status, not aspirational completion.
+> `origin/main`):** code, scaffold, CI configs, and docs are complete.
+> `build.yml` is now confirmed green (see BACKLOG.md §5 for the
+> `pnpm-workspace.yaml` fix in commit `266927a`). Items that require a live
+> Logseq desktop instance or a pushed release tag could not be executed in
+> the implementation sandbox. See `BACKLOG.md` in this same directory for
+> the full explanation of each open item and how to close it out. **This
+> sprint is NOT yet done** — the checkboxes below reflect actual verified
+> status, not aspirational completion.
 
 - [x] `pnpm typecheck` and `pnpm build` pass locally. *(verified in sandbox)*
 - [ ] Plugin loads unpacked; `/zetlify` command appears. *(not verified — no Logseq desktop available; see BACKLOG.md §1)*
 - [ ] All 8 rows of the §7 test matrix pass; results recorded in `test-results.md`. *(scaffolded, all rows "Not yet run"; see BACKLOG.md §1)*
 - [ ] Page names match `yyyymmddhhmmssxx`; no collisions on rapid double-invoke. *(only pure-function format verified via `scratch-timestamp.mjs`; live collision guard against `logseq.Editor.getPage` untested; see BACKLOG.md §1)*
 - [ ] Original block becomes `{{embed [[<name>]]}}`; children moved with UUIDs intact. *(implemented per plan §5 but not manually verified in a real graph; see BACKLOG.md §1)*
-- [ ] `build.yml` green on push. *(pushed to origin/main; Actions run not checked; see BACKLOG.md §2)*
+- [x] `build.yml` green on push. *(fixed committed `pnpm-workspace.yaml` — no `packages:` key broke pnpm 9's `pnpm store path` in CI; removed + gitignored in commit `266927a`; verified green: [run 30325810789](https://github.com/rvalledorjr/logseq-plugin-zetlify/actions/runs/30325810789))*
 - [ ] `publish.yml` produces a Release with a correctly-structured `.zip`. *(no tag pushed yet; see BACKLOG.md §2)*
 - [x] `.gitignore`, `README`, `LICENSE`, `pnpm-lock.yaml` committed. *(verified — all present in commit `b689a99`)*
 
