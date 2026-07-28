@@ -38,11 +38,17 @@ function makeGraphDir(): string {
   return dir;
 }
 
+export type LaunchOptions = {
+  /** Record the window to a .webm via Playwright's built-in video capture (used by the
+   *  demo-GIF recorder; the e2e test suite doesn't pass this). */
+  recordVideo?: { dir: string; size?: { width: number; height: number } };
+};
+
 /**
  * Launch Logseq, open a fresh isolated graph, and load the built plugin.
  * Throws if dist/ is missing (build must run first).
  */
-export async function launchWithPlugin(): Promise<Harness> {
+export async function launchWithPlugin(opts: LaunchOptions = {}): Promise<Harness> {
   if (!existsSync(join(PLUGIN_DIR, "dist", "index.html"))) {
     throw new Error("dist/index.html missing — run `pnpm build` before the e2e suite");
   }
@@ -54,6 +60,7 @@ export async function launchWithPlugin(): Promise<Harness> {
     args: [`--user-data-dir=${userDataDir}`],
     env: { ...process.env, ELECTRON_IS_DEV: "0", ELECTRON_FORCE_IS_PACKAGED: "true" },
     timeout: 60_000,
+    recordVideo: opts.recordVideo,
   });
 
   // Stub the native folder picker (main process) to auto-return our temp graph.

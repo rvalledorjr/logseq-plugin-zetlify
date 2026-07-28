@@ -3,7 +3,7 @@
 Turn any block — with or without children — into its own timestamp-named page,
 and replace the original block with an embed pointing at it.
 
-> TODO: add a real GIF/screenshot before any marketplace submission.
+![Zetlify demo: typing /zetlify on a block turns it into an embed pointing at a new timestamp-named page](docs/demo.gif)
 
 ## What it does
 
@@ -36,6 +36,8 @@ Two rapid invocations are guaranteed to never collide on the same page name.
 pnpm dev        # Vite dev server with HMR via vite-plugin-logseq
 pnpm typecheck  # tsc --noEmit
 pnpm build      # production build into dist/
+pnpm demo:gif   # regenerate docs/demo.gif — drives a real Logseq desktop via the
+                # Tier-2 Playwright harness (see e2e/), requires `pnpm build` first
 ```
 
 ## Documentation
