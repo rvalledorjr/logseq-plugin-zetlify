@@ -28,18 +28,29 @@ Zettelkasten-style behavior: reference integrity survives the split.
 
 ## CI/CD
 
-Two workflows implement the Logseq marketplace's publishing contract:
+Two workflows implement the Logseq marketplace's publishing contract, and a test gate
+enforces the §7 acceptance matrix so a release cannot ship untested core functionality:
 
 - `.github/workflows/build.yml` — runs `pnpm install --frozen-lockfile`,
-  `pnpm typecheck`, `pnpm build` on every push/PR as a fast breakage check.
-- `.github/workflows/publish.yml` — on a `v*` tag, builds and packages
-  `dist/`, `package.json`, `icon.png`, `README.md` into a zip and attaches it
-  to a GitHub Release. This exact shape (zip-on-tag) is what the
-  [Logseq marketplace](https://github.com/logseq/marketplace) requires for
-  submission.
+  `pnpm typecheck`, **`pnpm test`** (Tier 1), `pnpm build` on every push/PR as a fast
+  breakage + regression check. Intended to be a required status check on `main`.
+- `.github/workflows/publish.yml` — on a `v*` tag, builds and packages `dist/`,
+  `package.json`, `icon.png`, `README.md` into a zip and attaches it to a GitHub
+  Release — the zip-on-tag shape the
+  [Logseq marketplace](https://github.com/logseq/marketplace) requires.
 
-Semantic-release is deliberately **not** used — it adds commit-convention
-overhead the marketplace doesn't require.
+**Two-tier testing:**
+- **Tier 1** (`test/`) — Vitest + an in-memory fake of `logseq.Editor.*` exercises the
+  real `zetlify()`/`makeUniquePageName()` logic, one test per matrix row. Milliseconds
+  per run, no Electron. Catches logic regressions on every commit. The fake is a
+  minimal *assumption* about Logseq's API, not ground truth.
+- **Tier 2** (planned) — Playwright + `_electron` + `Xvfb` against real Logseq, asserting
+  via Logseq's HTTP APIs server / a markdown diff of the graph. Covers what the mock
+  can't (real `moveBlock` UUID semantics, real command registration, real embed
+  rendering). Heavier/flakier, so it runs rarely — pre-release only, gating `publish.yml`.
+
+Semantic-release is deliberately **not** used — it adds commit-convention overhead the
+marketplace doesn't require.
 
 ## Known local-tooling gotcha
 
