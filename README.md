@@ -3,8 +3,7 @@
 Turn any block — with or without children — into its own timestamp-named page,
 and replace the original block with an embed pointing at it.
 
-![placeholder screenshot](.sprint/zetlify-slash-to-page/screenshot-placeholder.png)
-> TODO: replace with a real GIF/screenshot before any marketplace submission.
+> TODO: add a real GIF/screenshot before any marketplace submission.
 
 ## What it does
 
@@ -38,6 +37,11 @@ pnpm dev        # Vite dev server with HMR via vite-plugin-logseq
 pnpm typecheck  # tsc --noEmit
 pnpm build      # production build into dist/
 ```
+
+## Documentation
+
+See [`docs/architecture.md`](docs/architecture.md) for design decisions
+(stack choice, page-naming scheme, block move semantics, CI/CD).
 
 ## License
 

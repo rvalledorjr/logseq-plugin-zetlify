@@ -1,5 +1,10 @@
 node_modules
 dist
+
+# Sprint/working files (plans, research notes, scratch scripts, test logs).
+# Kept locally for our own process, not tracked — established project
+# knowledge that's worth keeping belongs in docs/ instead.
+.sprint/
 # Auto-generated locally by pnpm 11 when approving build scripts (e.g. esbuild
 # postinstall). Not part of the plan's file layout; breaks CI's pnpm 9, which
 # interprets it as a workspace manifest missing a required `packages:` field.
