@@ -3,6 +3,11 @@
   "version": "0.0.1",
   "description": "Turn a block and its children into a timestamp-named page and embed it in place.",
   "main": "dist/index.html",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9 <10"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

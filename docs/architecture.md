@@ -63,11 +63,25 @@ functionality:
 Semantic-release is deliberately **not** used — it adds commit-convention overhead the
 marketplace doesn't require.
 
-## Known local-tooling gotcha
+## Toolchain pinning
 
-`pnpm-workspace.yaml` is not part of this project's file layout. pnpm 11
-auto-writes it locally (no `packages:` key) when you run `pnpm approve-builds`
-to allow a dependency's postinstall script (e.g. esbuild). It's gitignored
-because CI's pinned pnpm 9 treats a `packages:`-less workspace file as
-invalid and fails `pnpm store path` during cache setup. If you hit an odd
-CI-only pnpm failure, check for this file first.
+The project pins its toolchain so local and CI converge on the same versions and the
+version drift that used to break local runs can't recur:
+
+- **`package.json` `"packageManager": "pnpm@9.15.9"`** — Corepack selects exactly this
+  pnpm regardless of what's installed globally. Run pnpm via Corepack (`corepack pnpm …`,
+  or just `pnpm …` with Corepack enabled) and you always get the right version. CI's
+  `pnpm/action-setup` reads this field too (no hardcoded `version:`), so package.json is
+  the single source of truth.
+- **`package.json` `"engines"`** (`node >=20`, `pnpm >=9 <10`) + **`.npmrc`
+  `engine-strict=true`** — a wrong Node/pnpm hard-fails instead of silently warning.
+- **`.tool-versions`** (`node 20.20.2`) — mise/asdf users get the CI-matching Node
+  automatically, overriding any global default.
+
+Why pnpm **9** specifically: the committed `pnpm-lock.yaml` is lockfileVersion 9.0, and
+pnpm 9 has no build-script approval gate. pnpm 10+ prompts on esbuild's postinstall and
+writes a local-only `pnpm-workspace.yaml` (an approvals cache with no `packages:` key)
+that pnpm 9 in CI then rejects during `pnpm store path`. Pinning to pnpm 9 eliminates
+that file at the source — it's no longer generated, so the old gitignore workaround for
+it is moot. If you ever see a stray `pnpm-workspace.yaml` locally, you're running the
+wrong pnpm; check `corepack pnpm --version` returns 9.x.
