@@ -1,0 +1,39 @@
+name: Publish
+on:
+  push:
+    tags:
+      - "v*"
+env:
+  PLUGIN_NAME: logseq-plugin-zetlify
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Package
+        id: package
+        run: |
+          mkdir ${{ env.PLUGIN_NAME }}
+          cp README.md package.json icon.png ${{ env.PLUGIN_NAME }}
+          mv dist ${{ env.PLUGIN_NAME }}
+          zip -r ${{ env.PLUGIN_NAME }}.zip ${{ env.PLUGIN_NAME }}
+          echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+      - name: Create release + attach assets
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          draft: false
+          prerelease: false
+          artifacts: "${{ env.PLUGIN_NAME }}.zip,package.json"
+          token: ${{ secrets.GITHUB_TOKEN }}

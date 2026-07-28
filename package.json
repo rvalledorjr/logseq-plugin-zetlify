@@ -1,0 +1,25 @@
+{
+  "name": "logseq-plugin-zetlify",
+  "version": "0.0.1",
+  "description": "Turn a block and its children into a timestamp-named page and embed it in place.",
+  "main": "dist/index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@logseq/libs": "^0.0.17"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "typescript": "^5",
+    "vite": "^5",
+    "vite-plugin-logseq": "^1.1.2"
+  },
+  "logseq": {
+    "id": "logseq-plugin-zetlify",
+    "icon": "./icon.png"
+  }
+}
