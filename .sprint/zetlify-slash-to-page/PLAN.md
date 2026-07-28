@@ -8,6 +8,13 @@ the exact API calls and pitfalls so you don't have to reverse-engineer them.
 **Read first:** `RESEARCH.md` in this same folder — it explains *why* the stack and
 CI are chosen. This file is the *what/how*.
 
+> **Implementation status:** Code, scaffold, and CI configs are implemented and
+> pushed (commit `b689a99`). Several DoD items (§10) remain open because they
+> require a live Logseq desktop instance or a pushed release tag, neither of
+> which was available/appropriate in the implementation sandbox. See
+> `BACKLOG.md` in this same folder for the itemized list of what's outstanding
+> and why, and §10 below for the checklist with per-item status.
+
 **Working files rule:** Any scratch files, notes, spikes, screenshots, or generated
 artifacts you produce while executing this plan go **inside this same directory**
 (`.sprint/zetlify-slash-to-page/`). Do not scatter them elsewhere in the repo.
@@ -455,14 +462,22 @@ jobs:
 
 ## 10. Definition of Done checklist
 
-- [ ] `pnpm typecheck` and `pnpm build` pass locally.
-- [ ] Plugin loads unpacked; `/zetlify` command appears.
-- [ ] All 8 rows of the §7 test matrix pass; results recorded in `test-results.md`.
-- [ ] Page names match `yyyymmddhhmmssxx`; no collisions on rapid double-invoke.
-- [ ] Original block becomes `{{embed [[<name>]]}}`; children moved with UUIDs intact.
-- [ ] `build.yml` green on push.
-- [ ] `publish.yml` produces a Release with a correctly-structured `.zip`.
-- [ ] `.gitignore`, `README`, `LICENSE`, `pnpm-lock.yaml` committed.
+> **Status as of implementation pass (commit `b689a99`, pushed to
+> `origin/main`):** code, scaffold, CI configs, and docs are complete. Items
+> that require a live Logseq desktop instance or a pushed release tag could
+> not be executed in the implementation sandbox. See `BACKLOG.md` in this
+> same directory for the full explanation of each open item and how to close
+> it out. **This sprint is NOT yet done** — the checkboxes below reflect
+> actual verified status, not aspirational completion.
+
+- [x] `pnpm typecheck` and `pnpm build` pass locally. *(verified in sandbox)*
+- [ ] Plugin loads unpacked; `/zetlify` command appears. *(not verified — no Logseq desktop available; see BACKLOG.md §1)*
+- [ ] All 8 rows of the §7 test matrix pass; results recorded in `test-results.md`. *(scaffolded, all rows "Not yet run"; see BACKLOG.md §1)*
+- [ ] Page names match `yyyymmddhhmmssxx`; no collisions on rapid double-invoke. *(only pure-function format verified via `scratch-timestamp.mjs`; live collision guard against `logseq.Editor.getPage` untested; see BACKLOG.md §1)*
+- [ ] Original block becomes `{{embed [[<name>]]}}`; children moved with UUIDs intact. *(implemented per plan §5 but not manually verified in a real graph; see BACKLOG.md §1)*
+- [ ] `build.yml` green on push. *(pushed to origin/main; Actions run not checked; see BACKLOG.md §2)*
+- [ ] `publish.yml` produces a Release with a correctly-structured `.zip`. *(no tag pushed yet; see BACKLOG.md §2)*
+- [x] `.gitignore`, `README`, `LICENSE`, `pnpm-lock.yaml` committed. *(verified — all present in commit `b689a99`)*
 
 ---
 
