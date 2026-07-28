@@ -50,10 +50,15 @@ functionality:
   real `zetlify()`/`makeUniquePageName()` logic, one test per matrix row. Milliseconds
   per run, no Electron. Catches logic regressions on every commit. The fake is a
   minimal *assumption* about Logseq's API, not ground truth.
-- **Tier 2** (`e2e/`) — Playwright + `_electron` + `Xvfb` against real Logseq, asserting
-  via Logseq's HTTP APIs server / a markdown diff of the graph. Covers what the mock
-  can't (real `moveBlock` UUID semantics, real command registration, real embed
-  rendering). Heavier/flakier, so it runs rarely — pre-release only, as the publish gate.
+- **Tier 2** (`e2e/`) — Playwright + `_electron` + `Xvfb` against a real, pinned Logseq
+  desktop (`LOGSEQ_VERSION` in `e2e.yml`). It boots Logseq in an isolated `--user-data-dir`
+  (never touches the developer's real graphs), opens a throwaway graph, loads the built
+  `dist/` plugin via `LSPluginCore.register`, invokes the real `/zetlify` slash command,
+  and asserts on the resulting graph markdown on disk + the live block API. Covers what
+  the mock can't (real `moveBlock` UUID semantics, real command registration, the real
+  embed transform). Heavier/flakier, so it runs rarely — pre-release only, as the publish
+  gate. All 8 §7 rows pass. Harness: `e2e/harness.ts`; discovery notes in
+  `.sprint/ci-cd-test-enforcement/RESULTS.md`.
 
 Semantic-release is deliberately **not** used — it adds commit-convention overhead the
 marketplace doesn't require.

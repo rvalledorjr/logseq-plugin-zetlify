@@ -1,5 +1,6 @@
 node_modules
 dist
+test-results
 
 # Sprint/working files (plans, research notes, scratch scripts, test logs).
 # Kept locally for our own process, not tracked — established project

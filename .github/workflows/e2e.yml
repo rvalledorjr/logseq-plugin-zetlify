@@ -1,25 +1,22 @@
 name: E2E (Tier 2)
 # High-fidelity integration gate: drives a REAL, pinned Logseq desktop instance under
-# Xvfb on ubuntu-latest via Playwright's Electron support, running the 8-row §7 matrix
-# against the actual @logseq/libs API and command palette. Covers what the Tier 1 mock
-# cannot (real moveBlock UUID semantics, real slash-command registration, real embed
-# rendering).
+# Xvfb via Playwright's Electron support, running the 8-row §7 matrix against the actual
+# @logseq/libs API and the real /zetlify slash command. Covers what the Tier 1 mock
+# cannot: real moveBlock UUID semantics, real slash-command registration, and the real
+# embed transform. See docs/architecture.md and .sprint/ci-cd-test-enforcement/RESULTS.md.
 #
-# STATUS: SCAFFOLD. The Playwright suite (e2e/) is stubbed with test.fixme placeholders.
-# Before this workflow can go green, complete the Phase 3 spike in PLAN.md §6:
-#   1. Pin an exact Logseq version below (LOGSEQ_VERSION) — never "latest".
-#   2. Implement the AppImage download step (marked TODO).
-#   3. Make e2e/fixtures/graph load dist/ unpacked + enable the HTTP API server
-#      non-interactively (config/flag driven — CI cannot click Settings).
-# Runnable on demand via workflow_dispatch; consumed by publish.yml via workflow_call.
+# Runnable on demand (workflow_dispatch); consumed by publish.yml (workflow_call) as the
+# fail-closed release gate.
 
 on:
   workflow_dispatch:
   workflow_call:
 
 env:
-  # TODO(Phase 3): pin the EXACT Logseq desktop version validated locally. Not "latest".
-  LOGSEQ_VERSION: "REPLACE_ME"
+  # Pin the exact Logseq desktop version the suite is validated against (never "latest",
+  # so an unrelated desktop update can't silently break the harness). Matches the version
+  # the harness was developed against locally.
+  LOGSEQ_VERSION: "0.10.15"
 
 jobs:
   e2e:
@@ -36,19 +33,27 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
 
-      - name: Download pinned Logseq desktop (AppImage)
+      - name: Download + extract pinned Logseq desktop
         run: |
-          # TODO(Phase 3): download the Logseq ${LOGSEQ_VERSION} .AppImage from the
-          # official GitHub releases, chmod +x, and export its path as LOGSEQ_BIN for
-          # the test step. Example shape (URL/asset name must be verified):
-          #   curl -L -o logseq.AppImage \
-          #     "https://github.com/logseq/logseq/releases/download/${LOGSEQ_VERSION}/Logseq-linux-x64-${LOGSEQ_VERSION}.AppImage"
-          #   chmod +x logseq.AppImage
-          #   echo "LOGSEQ_BIN=$PWD/logseq.AppImage" >> "$GITHUB_ENV"
-          echo "TODO: implement Logseq download for ${LOGSEQ_VERSION}" && exit 1
+          set -euo pipefail
+          url="https://github.com/logseq/logseq/releases/download/${LOGSEQ_VERSION}/Logseq-linux-x64-${LOGSEQ_VERSION}.AppImage"
+          echo "Downloading $url"
+          curl -fL -o logseq.AppImage "$url"
+          chmod +x logseq.AppImage
+          # Runners have no FUSE, so extract instead of mounting the AppImage.
+          ./logseq.AppImage --appimage-extract >/dev/null
+          echo "LOGSEQ_BIN=$PWD/squashfs-root/Logseq" >> "$GITHUB_ENV"
 
-      - name: Install Playwright system deps
+      - name: Install Playwright + Electron system deps
         run: npx playwright install-deps
 
       - name: Run Tier 2 under Xvfb
         run: xvfb-run -a pnpm test:e2e
+
+      - name: Upload Playwright artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results
+          path: test-results/
+          if-no-files-found: ignore

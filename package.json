@@ -15,6 +15,7 @@
     "@logseq/libs": "^0.0.17"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.0",
     "@types/node": "^20",
     "typescript": "^5",
     "vite": "^5",
