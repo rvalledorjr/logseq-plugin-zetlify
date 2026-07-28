@@ -1,2 +1,6 @@
 node_modules
 dist
+# Auto-generated locally by pnpm 11 when approving build scripts (e.g. esbuild
+# postinstall). Not part of the plan's file layout; breaks CI's pnpm 9, which
+# interprets it as a workspace manifest missing a required `packages:` field.
+pnpm-workspace.yaml
